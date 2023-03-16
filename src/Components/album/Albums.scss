@@ -1,0 +1,22 @@
+.albums{
+  margin-top:30px;
+  margin-bottom: 30px;
+  .card{
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+    margin: 10px 0 10px 0;
+    .title{
+      font-size: 16px;
+      font-weight: bold;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    img{
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 5px;
+      width: 100%;
+    }
+  }
+
+}
