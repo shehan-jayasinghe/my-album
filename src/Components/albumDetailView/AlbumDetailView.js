@@ -1,16 +1,16 @@
 import React, {useContext, useEffect, useMemo, useState} from "react";
 import {useParams} from 'react-router-dom';
-import "./AlbumDetailView.scss";
 import {AlbumsContext} from "../../Contexts/albumsContext";
 import {Col, Container, Row, Spinner} from "react-bootstrap";
 import {toTitleCase} from "../../Utils/StringUtils";
 
+import "./AlbumDetailView.scss";
 const AlbumDetailView=()=>{
 
     const {id} = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
-    const { isLoadingAlbums,albums} = useContext(AlbumsContext);
+    const { isLoadingAlbums,albums,sortingDirection} = useContext(AlbumsContext);
 
 
     const photoMap=useMemo(()=>(
@@ -37,11 +37,30 @@ const AlbumDetailView=()=>{
     useEffect(() => {
         setIsLoading(true);
         if(id){
-            setData(albums.filter(album=>parseInt(id)===album?.id))
+            const photosAlbum = albums.filter(album=>parseInt(id)===album?.id);
+            if(photosAlbum.length!==0){
+                let sortedPhoto;
+                if(sortingDirection==="ASC"){
+                    sortedPhoto=JSON.parse(JSON.stringify(photosAlbum[0].photos.sort((a, b)=>{
+                        if(a.title < b.title) { return -1; }
+                        if(a.title > b.title) { return 1; }
+                        return 0
+                    })));
+                    setData([{...photosAlbum,photos:sortedPhoto}]);
+                }else {
+                    sortedPhoto=JSON.parse(JSON.stringify(photosAlbum[0].photos.sort((a, b)=>{
+                        if(a.title < b.title) { return 1; }
+                        if(a.title > b.title) { return -1; }
+                        return 0
+                    })));
+                    setData([{...photosAlbum,photos:sortedPhoto}]);
+                }
+            }
         }
         setIsLoading(false);
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id,albums]);
+    }, [id,albums,sortingDirection]);
+
 
     return(
         <div className="album-detail-view">

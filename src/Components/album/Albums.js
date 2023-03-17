@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useMemo} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {Col, Container, Row, Spinner} from "react-bootstrap";
 import {AlbumsContext} from "../../Contexts/albumsContext";
 import {useHistory} from "react-router-dom";
@@ -8,15 +8,16 @@ import "./Albums.scss";
 
 
 const Albums=()=>{
-    const { isLoadingAlbums,albums} = useContext(AlbumsContext);
     const history = useHistory();
+    const { isLoadingAlbums, albums,sortingDirection} = useContext(AlbumsContext);
+    const [data, setData] = useState([]);
 
     const detailViewNavigate = useCallback(({id}) => {
         history.push(`/${id}`)
     }, [history]);
 
     const albumsMap=useMemo(()=>(
-        albums.length!==0?albums.map((album,index)=>(
+        data.length!==0?data.map((album,index)=>(
                  <Col xs={12} md={12} lg={6} key={`${index}-${album?.id}`} onClick={()=>detailViewNavigate({id:album?.id})}>
                      <div className="card">
                          <Row xs={12} md={12} lg={12}>
@@ -37,7 +38,26 @@ const Albums=()=>{
                      </div>
                  </Col>
         )):<div>Albums not found</div>
-    ),[albums,detailViewNavigate]);
+    ),[data,detailViewNavigate]);
+
+    useEffect(() => {
+        setData([]);
+         if(sortingDirection==="ASC"){
+             setData(JSON.parse(JSON.stringify(albums.sort((a, b)=>{
+                 if(a.title < b.title) { return -1; }
+                 if(a.title > b.title) { return 1; }
+                 return 0;
+             }))))
+         }else {
+             setData(JSON.parse(JSON.stringify(albums.sort((a, b)=>{
+                 if(a.title < b.title) { return 1; }
+                 if(a.title > b.title) { return -1; }
+                 return 0;
+             }))))
+         }
+
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [albums,sortingDirection]);
 
     return(
             <div className="albums">
