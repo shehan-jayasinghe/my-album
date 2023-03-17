@@ -51,14 +51,15 @@ const AlbumsContextProvider=(props)=>{
             const albums = await getAlbumsByUserId({userId:2});
             let albumsWidthPhotos=[];
             if(albums.length!==0){
-                albumsWidthPhotos= await Promise.all(albums.map(async album => {
+                albumsWidthPhotos=albums.filter(album=>album?.id!==16);
+                albumsWidthPhotos= await Promise.all(albumsWidthPhotos.map(async album => {
                     if (album?.id) {
                         const albumPhotos = await getAlbumPhotosId(album?.id);
                         return {...album, photos: albumPhotos}
                     } else {
                         return {...album, photos: []}
                     }
-                }))
+                }));
             }
             dispatch({type: AlbumsContextActions.SET_ALBUMS, albums: albumsWidthPhotos});
         }catch (e) {
